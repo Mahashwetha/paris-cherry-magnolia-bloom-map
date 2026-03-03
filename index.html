@@ -108,8 +108,10 @@ svg.paris-map {
 .arr-num  { font-family:Arial,sans-serif; font-weight:800; font-size:13px; fill:rgba(255,255,255,.95); text-anchor:middle; dominant-baseline:middle; pointer-events:none; }
 .arr-sub  { font-family:Arial,sans-serif; font-size:7px;   fill:rgba(255,255,255,.80); text-anchor:middle; dominant-baseline:middle; pointer-events:none; }
 .arr-icon { font-size:9px; text-anchor:middle; dominant-baseline:middle; pointer-events:none; }
-.seine    { fill:none; stroke:url(#seineGrad); stroke-width:4; opacity:.7; stroke-linecap:round; stroke-linejoin:round; }
-.seine-label { font-family:Georgia,serif; font-size:9px; fill:#6aabda; font-style:italic; opacity:.75; }
+.seine-bg  { fill:none; stroke:#cce8ff; stroke-width:8; opacity:.35; stroke-linecap:round; }
+.seine     { fill:none; stroke:url(#seineGrad); stroke-width:3.5; opacity:.85; stroke-linecap:round; stroke-linejoin:round; }
+.seine-label { font-family:Georgia,serif; font-size:11px; fill:#2a80c8; font-style:italic; font-weight:600;
+               paint-order:stroke; stroke:#fff; stroke-width:3px; stroke-linejoin:round; opacity:.92; }
 
 /* ── INFO PANEL ── */
 .info-panel {
@@ -138,8 +140,9 @@ svg.paris-map {
   font-weight:800; font-size:15px; font-family:sans-serif;
   display:flex; align-items:center; justify-content:center; flex-shrink:0;
 }
-.info-title h3   { font-size:15px; color:var(--dark); margin-bottom:2px; }
-.info-title .dist{ font-size:11px; color:#9a6090; font-style:italic; }
+.info-title h3        { font-size:15px; color:var(--dark); margin-bottom:2px; }
+.info-title .dist     { font-size:11px; color:#9a6090; font-style:italic; }
+.info-title .landmark-badge { font-size:11px; color:#3a78b8; font-family:sans-serif; margin-top:2px; }
 
 .stars-row { display:flex; align-items:center; gap:7px; margin-bottom:12px; font-family:sans-serif; }
 .stars-row span:first-child { font-size:11px; color:#9a6090; }
@@ -276,17 +279,25 @@ svg.paris-map {
     <svg class="paris-map" viewBox="0 0 650 515" id="mapSvg">
       <defs>
         <linearGradient id="seineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%"   stop-color="#a8d8f0"/>
-          <stop offset="50%"  stop-color="#6ab4e8"/>
-          <stop offset="100%" stop-color="#a8d8f0"/>
+          <stop offset="0%"   stop-color="#b8dcf5"/>
+          <stop offset="40%"  stop-color="#4aa8e8"/>
+          <stop offset="60%"  stop-color="#3a98d8"/>
+          <stop offset="100%" stop-color="#b8dcf5"/>
         </linearGradient>
+        <filter id="riverGlow" x="-20%" y="-80%" width="140%" height="260%">
+          <feGaussianBlur stdDeviation="2.5" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
       </defs>
-      <!-- La Seine -->
-      <path class="seine" d="M 45,295 C 120,290 185,280 270,272 C 340,265 400,260 480,256 C 540,253 590,250 630,247"/>
+      <!-- La Seine — soft glow backing + main line + label -->
+      <path class="seine-bg" d="M 42,300 C 95,296 148,288 210,280 C 258,274 292,271 328,273 C 368,275 398,267 445,260 C 492,253 555,249 638,245"/>
+      <path class="seine" filter="url(#riverGlow)"
+            d="M 42,300 C 95,296 148,288 210,280 C 258,274 292,271 328,273 C 368,275 398,267 445,260 C 492,253 555,249 638,245"/>
+      <path id="seinePath" fill="none"
+            d="M 42,300 C 95,296 148,288 210,280 C 258,274 292,271 328,273 C 368,275 398,267 445,260 C 492,253 555,249 638,245"/>
       <text class="seine-label">
-        <textPath href="#seinePath" startOffset="38%">la Seine</textPath>
+        <textPath href="#seinePath" startOffset="32%">〰 la Seine</textPath>
       </text>
-      <path id="seinePath" fill="none" d="M 45,295 C 120,290 185,280 270,272 C 340,265 400,260 480,256 C 540,253 590,250 630,247"/>
       <g id="hexG"></g>
     </svg>
   </div>
@@ -371,7 +382,7 @@ function peak(p){ return LANG==='fr' && PEAK[p] ? PEAK[p].fr : p; }
 
 // ─── BLOOM DATA ───────────────────────────────────────────────────────────────
 const D = {
-  1:  { dist:"Louvre", score:4,
+  1:  { dist:"Louvre", landmark:"Louvre", score:4,
         spots:[
           {n:"Jardin des Tuileries",        t:"cherry",   p:"Late Mar – Early Apr"},
           {n:"Jardin du Palais Royal",       t:"magnolia", p:"Mid March"},
@@ -379,21 +390,21 @@ const D = {
         tip_en:"The Tuileries cherry allées are among Paris's most elegant sights in spring.",
         tip_fr:"Les allées de cerisiers des Tuileries comptent parmi les plus élégantes de Paris au printemps." },
 
-  2:  { dist:"Bourse", score:2,
+  2:  { dist:"Bourse", landmark:"Bourse", score:2,
         spots:[
           {n:"Square Louvois",               t:"magnolia", p:"Mid March"},
           {n:"Sq. des Arts et Métiers",       t:"cherry",   p:"Late March"}],
         tip_en:"A quiet arrondissement with tucked-away garden squares worth seeking out.",
         tip_fr:"Un arrondissement discret avec des squares cachés qui valent la peine d'être découverts." },
 
-  3:  { dist:"Temple", score:2,
+  3:  { dist:"Temple", landmark:"Le Marais", score:2,
         spots:[
           {n:"Square du Temple",             t:"cherry",   p:"Late March"},
           {n:"Square Émile Chautemps",        t:"magnolia", p:"Mid March"}],
         tip_en:"Square du Temple surprises with a burst of pink among Marais architecture.",
         tip_fr:"Le Square du Temple surprend avec une explosion de rose au cœur du Marais." },
 
-  4:  { dist:"Hôtel-de-Ville", score:3,
+  4:  { dist:"Hôtel-de-Ville", landmark:"Notre-Dame", score:3,
         spots:[
           {n:"Square de l'Île Saint-Louis",   t:"cherry",   p:"Late March"},
           {n:"Square Barye",                  t:"magnolia", p:"Mid March"},
@@ -401,7 +412,7 @@ const D = {
         tip_en:"Cherry blossoms with Notre-Dame in the backdrop — one of Paris's most romantic views.",
         tip_fr:"Des cerisiers avec Notre-Dame en toile de fond — l'une des vues les plus romantiques de Paris." },
 
-  5:  { dist:"Panthéon", score:5,
+  5:  { dist:"Panthéon", landmark:"Panthéon", score:5,
         spots:[
           {n:"Jardin des Plantes",            t:"magnolia", p:"Early March"},
           {n:"Square René Viviani",           t:"magnolia", p:"Mid March"},
@@ -410,7 +421,7 @@ const D = {
         tip_en:"Jardin des Plantes has a legendary magnolia alley — visit in early March before the crowds!",
         tip_fr:"Le Jardin des Plantes possède une allée de magnolias légendaire — visitez début mars avant les foules !" },
 
-  6:  { dist:"Luxembourg", score:5,
+  6:  { dist:"Luxembourg", landmark:"St-Germain", score:5,
         spots:[
           {n:"Jardin du Luxembourg (cerisiers)", t:"cherry",   p:"Late March"},
           {n:"Jardin du Luxembourg (magnolias)", t:"magnolia", p:"Mid March"},
@@ -418,7 +429,7 @@ const D = {
         tip_en:"The Luxembourg's cherry trees are iconic. Come at golden hour for the best photos.",
         tip_fr:"Les cerisiers du Luxembourg sont iconiques. Venez à l'heure dorée pour les meilleures photos." },
 
-  7:  { dist:"Palais-Bourbon", score:3,
+  7:  { dist:"Palais-Bourbon", landmark:"T. Eiffel", score:3,
         spots:[
           {n:"Champ de Mars",                 t:"cherry",   p:"Late March"},
           {n:"Esplanade des Invalides",        t:"magnolia", p:"Mid March"},
@@ -426,7 +437,7 @@ const D = {
         tip_en:"Cherry blossoms at the Champ de Mars with the Eiffel Tower as backdrop — classic Paris.",
         tip_fr:"Des cerisiers au Champ-de-Mars avec la Tour Eiffel en arrière-plan — Paris classique." },
 
-  8:  { dist:"Élysée", score:5,
+  8:  { dist:"Élysée", landmark:"Champs-Élys.", score:5,
         spots:[
           {n:"Parc Monceau (cerisiers)",       t:"cherry",   p:"Late March"},
           {n:"Parc Monceau (magnolias)",        t:"magnolia", p:"Mid March"},
@@ -434,14 +445,14 @@ const D = {
         tip_en:"Parc Monceau is the most famous cherry blossom spot on the Right Bank — absolutely stunning.",
         tip_fr:"Le Parc Monceau est le spot de cerisiers le plus célèbre de la Rive Droite — absolument magnifique." },
 
-  9:  { dist:"Opéra", score:2,
+  9:  { dist:"Opéra", landmark:"Opéra", score:2,
         spots:[
           {n:"Square Montholon",               t:"cherry",   p:"Late March"},
           {n:"Square Berlioz",                 t:"magnolia", p:"Mid March"}],
         tip_en:"Hidden gems between Haussmann boulevards — perfect for a quiet spring stroll.",
         tip_fr:"Des joyaux cachés entre les boulevards haussmanniens — idéal pour une balade printanière tranquille." },
 
-  10: { dist:"Entrepôt", score:3,
+  10: { dist:"Entrepôt", landmark:"Canal St-M.", score:3,
         spots:[
           {n:"Canal Saint-Martin (berges)",    t:"cherry",   p:"Late March"},
           {n:"Square Villemin",                t:"magnolia", p:"Mid March"},
@@ -449,7 +460,7 @@ const D = {
         tip_en:"Cherry blossoms along Canal Saint-Martin are uniquely atmospheric — the water reflections are magical.",
         tip_fr:"Les cerisiers le long du Canal Saint-Martin sont uniques — les reflets dans l'eau sont magiques." },
 
-  11: { dist:"Popincourt", score:3,
+  11: { dist:"Popincourt", landmark:"Bastille", score:3,
         spots:[
           {n:"Coulée Verte René-Dumont",        t:"cherry",   p:"Late March"},
           {n:"Square de la Roquette",           t:"cherry",   p:"Late March"},
@@ -457,7 +468,7 @@ const D = {
         tip_en:"The Coulée Verte elevated walkway offers cherry trees at eye-level — a unique perspective!",
         tip_fr:"La Coulée Verte surélevée offre des cerisiers à hauteur d'yeux — une perspective unique !" },
 
-  12: { dist:"Reuilly", score:5,
+  12: { dist:"Reuilly", landmark:"Vincennes", score:5,
         spots:[
           {n:"Bois de Vincennes",               t:"cherry",   p:"Late Mar – Mid Apr"},
           {n:"Coulée Verte",                    t:"cherry",   p:"Late March"},
@@ -467,7 +478,7 @@ const D = {
         tip_en:"Bois de Vincennes is the BIGGEST cherry blossom destination in Paris — absolutely not to be missed!",
         tip_fr:"Le Bois de Vincennes est LA plus grande destination pour les cerisiers à Paris — absolument incontournable !" },
 
-  13: { dist:"Gobelins", score:3,
+  13: { dist:"Gobelins", landmark:"Chinatown", score:3,
         spots:[
           {n:"Parc de Choisy",                  t:"cherry",   p:"Late March"},
           {n:"Parc Kellermann",                 t:"magnolia", p:"Mid March"},
@@ -475,7 +486,7 @@ const D = {
         tip_en:"Parc de Choisy is a favourite hanami spot for Paris's Chinese community — a lively atmosphere.",
         tip_fr:"Le Parc de Choisy est un lieu de hanami apprécié de la communauté chinoise — très animé." },
 
-  14: { dist:"Observatoire", score:4,
+  14: { dist:"Observatoire", landmark:"Montparnasse", score:4,
         spots:[
           {n:"Parc Montsouris (cerisiers)",      t:"cherry",   p:"Late March"},
           {n:"Parc Montsouris (magnolias)",      t:"magnolia", p:"Mid March"},
@@ -483,7 +494,7 @@ const D = {
         tip_en:"Parc Montsouris offers one of the best mixed collections of cherry and magnolia in Paris.",
         tip_fr:"Le Parc Montsouris offre l'une des meilleures collections mixtes de cerisiers et magnolias de Paris." },
 
-  15: { dist:"Vaugirard", score:4,
+  15: { dist:"Vaugirard", landmark:"A.Citroën Pk", score:4,
         spots:[
           {n:"Parc André Citroën",              t:"magnolia", p:"Mid March"},
           {n:"Parc Georges Brassens",           t:"cherry",   p:"Late March"},
@@ -491,7 +502,7 @@ const D = {
         tip_en:"Parc André Citroën's magnolias bloom against a striking modern backdrop — very photogenic.",
         tip_fr:"Les magnolias du Parc André Citroën fleurissent sur un fond moderne saisissant — très photogénique." },
 
-  16: { dist:"Passy", score:5,
+  16: { dist:"Passy", landmark:"Trocadéro", score:5,
         spots:[
           {n:"Parc de Bagatelle (cerisiers)",    t:"cherry",   p:"Late Mar – Mid Apr"},
           {n:"Parc de Bagatelle (magnolias)",    t:"magnolia", p:"Early March"},
@@ -501,7 +512,7 @@ const D = {
         tip_en:"Bagatelle is THE destination — it hosts the famous annual Hanami festival every April. Go early!",
         tip_fr:"Bagatelle est LA destination — le célèbre festival Hanami s'y tient chaque avril. Arrivez tôt !" },
 
-  17: { dist:"Batignolles-Monceau", score:3,
+  17: { dist:"Batignolles-Monceau", landmark:"Batignolles", score:3,
         spots:[
           {n:"Parc Martin Luther King",          t:"cherry",   p:"Late March"},
           {n:"Square des Batignolles",           t:"magnolia", p:"Mid March"},
@@ -509,7 +520,7 @@ const D = {
         tip_en:"The eco-friendly Parc Clichy-Batignolles Martin Luther King is full of spring colour.",
         tip_fr:"Le Parc Clichy-Batignolles Martin Luther King est plein de couleurs printanières." },
 
-  18: { dist:"Butte-Montmartre", score:4,
+  18: { dist:"Butte-Montmartre", landmark:"Sacré-Cœur", score:4,
         spots:[
           {n:"Square Louise Michel",             t:"cherry",   p:"Late March"},
           {n:"Parc de la Turlure",               t:"magnolia", p:"Mid March"},
@@ -517,7 +528,7 @@ const D = {
         tip_en:"Cherry blossoms below Sacré-Cœur are breathtaking — arrive early on weekends to beat crowds.",
         tip_fr:"Les cerisiers sous le Sacré-Cœur sont à couper le souffle — arrivez tôt le week-end." },
 
-  19: { dist:"Buttes-Chaumont", score:4,
+  19: { dist:"Buttes-Chaumont", landmark:"La Villette", score:4,
         spots:[
           {n:"Buttes-Chaumont (cerisiers)",      t:"cherry",   p:"Late March"},
           {n:"Buttes-Chaumont (magnolias)",      t:"magnolia", p:"Mid March"},
@@ -525,7 +536,7 @@ const D = {
         tip_en:"Buttes-Chaumont is one of Paris's most beautiful parks — the hilly terrain adds drama to blooms.",
         tip_fr:"Les Buttes-Chaumont est l'un des plus beaux parcs de Paris — le relief collinaire magnifie les floraisons." },
 
-  20: { dist:"Ménilmontant", score:3,
+  20: { dist:"Ménilmontant", landmark:"P.Lachaise", score:3,
         spots:[
           {n:"Cimetière du Père Lachaise",       t:"magnolia", p:"Mid March"},
           {n:"Parc de Belleville",               t:"cherry",   p:"Late March"},
@@ -584,8 +595,8 @@ Object.entries(POS).forEach(([num, [c, r]]) => {
   grp.appendChild(svgEl('polygon', {points:hexPts(cx,cy), fill:col(d.spots.length)}));
   grp.appendChild(svgTxt(n===1?'1er':n+'e', {'class':'arr-num', x:cx, y:cy-8}));
 
-  const shortD = d.dist.length > 11 ? d.dist.substring(0,10)+'…' : d.dist;
-  grp.appendChild(svgTxt(shortD, {'class':'arr-sub', x:cx, y:cy+8}));
+  const shortL = d.landmark.length > 11 ? d.landmark.substring(0,10)+'…' : d.landmark;
+  grp.appendChild(svgTxt(shortL, {'class':'arr-sub', x:cx, y:cy+8}));
 
   const hasC = d.spots.some(s=>s.t==='cherry'), hasM = d.spots.some(s=>s.t==='magnolia');
   const both = hasC && hasM;
@@ -640,6 +651,7 @@ function renderInfo(n){
       <div class="info-title">
         <h3>${t.arrLabel(n)}</h3>
         <div class="dist">${d.dist}</div>
+        <div class="landmark-badge">🏛️ ${d.landmark}</div>
       </div>
     </div>
     <div class="stars-row"><span>${t.intensity}</span><span class="stars">${stars}</span></div>
