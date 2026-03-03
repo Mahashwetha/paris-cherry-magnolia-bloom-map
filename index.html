@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paris Blooms 🌸 Cherry Blossom & Magnolia</title>
+<style>
+:root {
+  --pink-deep: #c0305a;
+  --pink-mid:  #e0608a;
+  --pink-soft: #f090b0;
+  --pink-pale: #f8b8d0;
+  --pink-dust: #fcdce8;
+  --purple:    #7040a0;
+  --green:     #4a7a4a;
+  --dark:      #2a1530;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+
+body {
+  font-family: Georgia,'Times New Roman',serif;
+  background: linear-gradient(140deg, #fff8fc 0%, #f5f9f0 60%, #fef5ff 100%);
+  min-height: 100vh;
+  color: var(--dark);
+  overflow-x: hidden;
+}
+
+/* ── PETALS ── */
+.petals { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.petal  { position:absolute; top:-30px; animation:petalfall linear infinite; user-select:none; }
+@keyframes petalfall {
+  0%   { transform:translateY(-30px)  rotate(0deg)   translateX(0px);  opacity:.85; }
+  40%  { transform:translateY(40vh)   rotate(140deg) translateX(25px); opacity:.65; }
+  75%  { transform:translateY(75vh)   rotate(260deg) translateX(-18px);opacity:.4;  }
+  100% { transform:translateY(115vh)  rotate(380deg) translateX(10px); opacity:0;   }
+}
+
+/* ── HEADER ── */
+header {
+  position:relative; z-index:1;
+  text-align:center;
+  padding:26px 20px 10px;
+}
+header h1   { font-size:clamp(1.3rem,4vw,2.1rem); color:var(--dark); margin-bottom:5px; }
+header p    { font-size:.86rem; color:#8a5a80; font-style:italic; }
+
+/* ── LANG TOGGLE ── */
+.lang-bar {
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin-top:12px;
+}
+.lang-btn {
+  padding:5px 18px;
+  border-radius:20px;
+  border:2px solid var(--pink-soft);
+  background:white;
+  color:var(--pink-deep);
+  font-size:13px;
+  font-weight:700;
+  font-family:sans-serif;
+  cursor:pointer;
+  transition:all .18s;
+  letter-spacing:.5px;
+}
+.lang-btn:hover  { background:var(--pink-dust); }
+.lang-btn.active { background:var(--pink-deep); color:white; border-color:var(--pink-deep); }
+
+/* ── LAYOUT ── */
+.layout {
+  position:relative; z-index:1;
+  display:flex;
+  gap:18px;
+  max-width:1080px;
+  margin:0 auto;
+  padding:10px 18px 24px;
+  align-items:flex-start;
+}
+
+/* ── MAP ── */
+.map-side { flex:1; min-width:0; }
+
+.legend {
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px 12px;
+  margin-bottom:10px;
+  align-items:center;
+}
+.leg {
+  display:flex; align-items:center; gap:5px;
+  font-size:11px; color:#7a5580; font-family:sans-serif;
+}
+.leg-sq { width:13px; height:13px; border-radius:3px; flex-shrink:0; }
+
+svg.paris-map {
+  width:100%; max-width:640px; height:auto; display:block;
+  filter:drop-shadow(0 4px 18px rgba(180,80,120,.14));
+}
+.arr-hex { cursor:pointer; }
+.arr-hex polygon {
+  stroke:rgba(255,255,255,.85); stroke-width:2;
+  transition:filter .18s, stroke-width .18s;
+}
+.arr-hex:hover  polygon { filter:brightness(1.12); stroke-width:2.5; }
+.arr-hex.active polygon { stroke:var(--pink-deep); stroke-width:3.5; filter:brightness(1.08); }
+.arr-num  { font-family:Arial,sans-serif; font-weight:800; font-size:13px; fill:rgba(255,255,255,.95); text-anchor:middle; dominant-baseline:middle; pointer-events:none; }
+.arr-sub  { font-family:Arial,sans-serif; font-size:7px;   fill:rgba(255,255,255,.80); text-anchor:middle; dominant-baseline:middle; pointer-events:none; }
+.arr-icon { font-size:9px; text-anchor:middle; dominant-baseline:middle; pointer-events:none; }
+.seine    { fill:none; stroke:#b0d4f0; stroke-width:9; opacity:.55; stroke-linecap:round; }
+
+/* ── INFO PANEL ── */
+.info-panel {
+  width:285px; flex-shrink:0;
+  position:sticky; top:16px;
+}
+.info-card {
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(10px);
+  border-radius:16px; padding:20px;
+  box-shadow:0 4px 24px rgba(180,80,130,.15);
+  border:1px solid rgba(240,160,200,.3);
+  min-height:280px;
+}
+.placeholder { text-align:center; padding:28px 8px; }
+.placeholder .ico { font-size:46px; display:block; margin-bottom:10px; }
+.placeholder p    { font-size:13px; color:#9a6090; line-height:1.6; }
+
+.info-header {
+  display:flex; gap:10px; align-items:flex-start;
+  margin-bottom:12px; padding-bottom:11px;
+  border-bottom:1px solid #f0d0e4;
+}
+.num-badge {
+  width:42px; height:42px; border-radius:10px; color:#fff;
+  font-weight:800; font-size:15px; font-family:sans-serif;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.info-title h3   { font-size:15px; color:var(--dark); margin-bottom:2px; }
+.info-title .dist{ font-size:11px; color:#9a6090; font-style:italic; }
+
+.stars-row { display:flex; align-items:center; gap:7px; margin-bottom:12px; font-family:sans-serif; }
+.stars-row span:first-child { font-size:11px; color:#9a6090; }
+.stars { color:var(--pink-deep); font-size:15px; }
+
+.spot-list { list-style:none; margin-bottom:12px; }
+.spot-item {
+  padding:7px 10px; border-radius:8px;
+  background:#fff5fa; border-left:3px solid var(--pink-soft);
+  margin-bottom:6px; font-family:sans-serif; font-size:12px;
+  cursor:pointer; transition:background .15s, border-color .15s;
+}
+.spot-item:hover { background:#ffedf5; border-left-color:var(--pink-deep); }
+.spot-item .sname { font-weight:700; color:var(--dark); display:flex; align-items:center; justify-content:space-between; margin-bottom:3px; }
+.spot-item .sname-text { flex:1; }
+.map-pin { font-size:13px; opacity:.5; transition:opacity .15s; flex-shrink:0; margin-left:6px; }
+.spot-item:hover .map-pin { opacity:1; }
+.spot-meta  { display:flex; gap:7px; align-items:center; flex-wrap:wrap; }
+.tag        { padding:1px 7px; border-radius:10px; font-size:10px; font-weight:700; }
+.tag.cherry   { background:#fde0ea; color:#c0305a; }
+.tag.magnolia { background:#ede0fa; color:#7040a0; }
+.mag-sym      { color:#9050c8; font-size:13px; line-height:1; }
+.peak { font-size:10px; color:#9090a0; }
+
+.tip-box {
+  background:#f0f8f0; border-left:3px solid #a0c8a0;
+  border-radius:7px; padding:9px 11px;
+  font-size:11.5px; color:var(--green); font-family:sans-serif; line-height:1.5;
+}
+.tip-box::before { content:"💡 "; }
+
+/* ── TOOLTIP ── */
+.tip {
+  position:fixed; background:rgba(35,10,45,.88); color:#fff;
+  padding:5px 10px; border-radius:8px; font-size:12px; font-family:sans-serif;
+  pointer-events:none; white-space:nowrap; z-index:999; display:none;
+  transform:translate(-50%,-130%);
+}
+
+/* ── CALENDAR ── */
+.calendar {
+  position:relative; z-index:1;
+  max-width:1080px; margin:0 auto; padding:0 18px 32px;
+}
+.calendar h2 { text-align:center; font-size:1.05rem; margin-bottom:12px; color:var(--dark); }
+.cal-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.cal-phase { border-radius:12px; padding:13px 14px; border:1px solid rgba(220,160,200,.25); }
+.cal-phase h4 { font-size:12px; font-weight:700; margin-bottom:8px; font-family:sans-serif; }
+.cal-phase ul { list-style:none; }
+.cal-phase li { font-size:11px; font-family:sans-serif; color:#7a5580; padding:2px 0; line-height:1.5; }
+.ph1 { background:#f0ecff; } .ph1 h4 { color:#6030b0; }
+.ph2 { background:#fdeef8; } .ph2 h4 { color:#c030a0; }
+.ph3 { background:#fff0f5; } .ph3 h4 { color:var(--pink-deep); }
+.ph4 { background:#fff8f0; } .ph4 h4 { color:#c06020; }
+
+@media(max-width:700px){
+  .layout    { flex-direction:column; }
+  .info-panel{ width:100%; position:static; }
+  .cal-grid  { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="petals" id="petals"></div>
+
+<header>
+  <h1 id="h-title">🌸 Paris Cherry Blossom &amp; Magnolia</h1>
+  <p  id="h-sub">Interactive map by arrondissement · Click to explore bloom spots &amp; timing</p>
+  <div class="lang-bar">
+    <button class="lang-btn active" id="btn-en" onclick="setLang('en')">🇬🇧 EN</button>
+    <button class="lang-btn"        id="btn-fr" onclick="setLang('fr')">🇫🇷 FR</button>
+  </div>
+</header>
+
+<div class="tip" id="tip"></div>
+
+<div class="layout">
+  <div class="map-side">
+    <div class="legend" id="legend"></div>
+    <svg class="paris-map" viewBox="0 0 650 515" id="mapSvg">
+      <path class="seine" d="M 55,282 Q 160,272 285,268 T 455,258 610,248"/>
+      <g id="hexG"></g>
+    </svg>
+  </div>
+
+  <div class="info-panel">
+    <div class="info-card" id="infoCard"></div>
+  </div>
+</div>
+
+<div class="calendar">
+  <h2 id="cal-title"></h2>
+  <div class="cal-grid" id="cal-grid"></div>
+</div>
+
+<script>
+// ─── LANGUAGE ────────────────────────────────────────────────────────────────
+let LANG = 'en';
+
+const T = {
+  en: {
+    title:       "🌸 Paris Cherry Blossom &amp; Magnolia",
+    subtitle:    "Interactive map by arrondissement · Click to explore bloom spots &amp; timing",
+    leg5:        "5 spots (unmissable)",
+    leg4:        "4 spots",
+    leg3:        "3 spots",
+    leg2:        "2 spots",
+    leg1:        "1 spot",
+    legTypes:    "🌸 Cherry &nbsp;·&nbsp; <span class='mag-sym'>✿</span> Magnolia",
+    ph1:         "Click any arrondissement",
+    ph2:         "to discover its bloom spots, parks, and the best time to visit",
+    intensity:   "Bloom intensity:",
+    arrLabel:    n => `${n}${n===1?'st':'th'} Arrondissement`,
+    calTitle:    "🗓 Paris Bloom Calendar — March to April",
+    cherry:      "🌸 Cherry",
+    magnolia:    "<span class='mag-sym'>✿</span> Magnolia",
+    spots:       n => `${n} spot${n>1?'s':''}`,
+    cal: [
+      { cls:"ph1", h:"Early March — Magnolias open",           li:["<span class='mag-sym'>✿</span> Jardin des Plantes (5e)","<span class='mag-sym'>✿</span> Parc de Bagatelle (16e)","<span class='mag-sym'>✿</span> Père Lachaise (20e)","<span class='mag-sym'>✿</span> Sq. René Viviani (5e)"] },
+      { cls:"ph2", h:"Mid March — Magnolias peak",             li:["<span class='mag-sym'>✿</span> Parc Monceau (8e)","<span class='mag-sym'>✿</span> Jardin du Luxembourg (6e)","<span class='mag-sym'>✿</span> Champ de Mars (7e)","🌸 First cherries (5e, 6e)"] },
+      { cls:"ph3", h:"Late Mar – Early Apr ⭐ Cherry Blossom Peak", li:["🌸 Jardin des Tuileries (1e)","🌸 Bois de Vincennes (12e)","🌸 Parc Monceau (8e)","🌸 Buttes-Chaumont (19e)"] },
+      { cls:"ph4", h:"Mid–Late April — Last blooms",           li:["🌸 Bagatelle festival (16e)","🌸 Bois de Boulogne (16e)","🌸 Coulée Verte (12e)","🍃 Season ends — leaf out"] },
+    ]
+  },
+  fr: {
+    title:       "🌸 Cerisiers &amp; Magnolias de Paris",
+    subtitle:    "Carte interactive par arrondissement · Cliquez pour explorer les floraisons",
+    leg5:        "5 spots (incontournables)",
+    leg4:        "4 spots",
+    leg3:        "3 spots",
+    leg2:        "2 spots",
+    leg1:        "1 spot",
+    legTypes:    "🌸 Cerisier &nbsp;·&nbsp; <span class='mag-sym'>✿</span> Magnolia",
+    ph1:         "Cliquez sur un arrondissement",
+    ph2:         "pour découvrir ses floraisons, parcs et la meilleure période de visite",
+    intensity:   "Intensité de floraison :",
+    arrLabel:    n => `${n}${n===1?'er':'e'} Arrondissement`,
+    calTitle:    "🗓 Calendrier de floraison — Mars à Avril",
+    cherry:      "🌸 Cerisier",
+    magnolia:    "<span class='mag-sym'>✿</span> Magnolia",
+    spots:       n => `${n} spot${n>1?'s':''}`,
+    cal: [
+      { cls:"ph1", h:"Début mars — Les magnolias s'ouvrent",   li:["<span class='mag-sym'>✿</span> Jardin des Plantes (5e)","<span class='mag-sym'>✿</span> Parc de Bagatelle (16e)","<span class='mag-sym'>✿</span> Père Lachaise (20e)","<span class='mag-sym'>✿</span> Sq. René Viviani (5e)"] },
+      { cls:"ph2", h:"Mi-mars — Pic des magnolias",            li:["<span class='mag-sym'>✿</span> Parc Monceau (8e)","<span class='mag-sym'>✿</span> Jardin du Luxembourg (6e)","<span class='mag-sym'>✿</span> Champ-de-Mars (7e)","🌸 Premiers cerisiers (5e, 6e)"] },
+      { cls:"ph3", h:"Fin mars – Début avril ⭐ Pic des cerisiers", li:["🌸 Jardin des Tuileries (1e)","🌸 Bois de Vincennes (12e)","🌸 Parc Monceau (8e)","🌸 Buttes-Chaumont (19e)"] },
+      { cls:"ph4", h:"Mi-avril — Dernières floraisons",        li:["🌸 Festival Hanami Bagatelle (16e)","🌸 Bois de Boulogne (16e)","🌸 Coulée Verte (12e)","🍃 Fin de saison — feuillaison"] },
+    ]
+  }
+};
+
+// ─── PEAK TIME TRANSLATIONS ───────────────────────────────────────────────────
+const PEAK = {
+  "Early March":         { fr:"Début mars" },
+  "Mid March":           { fr:"Mi-mars" },
+  "Late March":          { fr:"Fin mars" },
+  "Late Mar – Early Apr":{ fr:"Fin mars – début avr." },
+  "Late Mar – Mid Apr":  { fr:"Fin mars – mi-avr." },
+};
+function peak(p){ return LANG==='fr' && PEAK[p] ? PEAK[p].fr : p; }
+
+// ─── BLOOM DATA ───────────────────────────────────────────────────────────────
+const D = {
+  1:  { dist:"Louvre", score:4,
+        spots:[
+          {n:"Jardin des Tuileries",        t:"cherry",   p:"Late Mar – Early Apr"},
+          {n:"Jardin du Palais Royal",       t:"magnolia", p:"Mid March"},
+          {n:"Square du Vert-Galant",        t:"cherry",   p:"Late March"}],
+        tip_en:"The Tuileries cherry allées are among Paris's most elegant sights in spring.",
+        tip_fr:"Les allées de cerisiers des Tuileries comptent parmi les plus élégantes de Paris au printemps." },
+
+  2:  { dist:"Bourse", score:2,
+        spots:[
+          {n:"Square Louvois",               t:"magnolia", p:"Mid March"},
+          {n:"Sq. des Arts et Métiers",       t:"cherry",   p:"Late March"}],
+        tip_en:"A quiet arrondissement with tucked-away garden squares worth seeking out.",
+        tip_fr:"Un arrondissement discret avec des squares cachés qui valent la peine d'être découverts." },
+
+  3:  { dist:"Temple", score:2,
+        spots:[
+          {n:"Square du Temple",             t:"cherry",   p:"Late March"},
+          {n:"Square Émile Chautemps",        t:"magnolia", p:"Mid March"}],
+        tip_en:"Square du Temple surprises with a burst of pink among Marais architecture.",
+        tip_fr:"Le Square du Temple surprend avec une explosion de rose au cœur du Marais." },
+
+  4:  { dist:"Hôtel-de-Ville", score:3,
+        spots:[
+          {n:"Square de l'Île Saint-Louis",   t:"cherry",   p:"Late March"},
+          {n:"Square Barye",                  t:"magnolia", p:"Mid March"},
+          {n:"Square Jean XXIII",             t:"cherry",   p:"Late March"}],
+        tip_en:"Cherry blossoms with Notre-Dame in the backdrop — one of Paris's most romantic views.",
+        tip_fr:"Des cerisiers avec Notre-Dame en toile de fond — l'une des vues les plus romantiques de Paris." },
+
+  5:  { dist:"Panthéon", score:5,
+        spots:[
+          {n:"Jardin des Plantes",            t:"magnolia", p:"Early March"},
+          {n:"Square René Viviani",           t:"magnolia", p:"Mid March"},
+          {n:"Arènes de Lutèce garden",       t:"cherry",   p:"Late March"},
+          {n:"Square Paul Langevin",          t:"cherry",   p:"Late March"}],
+        tip_en:"Jardin des Plantes has a legendary magnolia alley — visit in early March before the crowds!",
+        tip_fr:"Le Jardin des Plantes possède une allée de magnolias légendaire — visitez début mars avant les foules !" },
+
+  6:  { dist:"Luxembourg", score:5,
+        spots:[
+          {n:"Jardin du Luxembourg (cerisiers)", t:"cherry",   p:"Late March"},
+          {n:"Jardin du Luxembourg (magnolias)", t:"magnolia", p:"Mid March"},
+          {n:"Square Félix Desruelles",          t:"cherry",   p:"Late March"}],
+        tip_en:"The Luxembourg's cherry trees are iconic. Come at golden hour for the best photos.",
+        tip_fr:"Les cerisiers du Luxembourg sont iconiques. Venez à l'heure dorée pour les meilleures photos." },
+
+  7:  { dist:"Palais-Bourbon", score:3,
+        spots:[
+          {n:"Champ de Mars",                 t:"cherry",   p:"Late March"},
+          {n:"Esplanade des Invalides",        t:"magnolia", p:"Mid March"},
+          {n:"Square Samuel Rousseau",         t:"cherry",   p:"Late March"}],
+        tip_en:"Cherry blossoms at the Champ de Mars with the Eiffel Tower as backdrop — classic Paris.",
+        tip_fr:"Des cerisiers au Champ-de-Mars avec la Tour Eiffel en arrière-plan — Paris classique." },
+
+  8:  { dist:"Élysée", score:5,
+        spots:[
+          {n:"Parc Monceau (cerisiers)",       t:"cherry",   p:"Late March"},
+          {n:"Parc Monceau (magnolias)",        t:"magnolia", p:"Mid March"},
+          {n:"Square de l'Élysée",             t:"cherry",   p:"Late March"}],
+        tip_en:"Parc Monceau is the most famous cherry blossom spot on the Right Bank — absolutely stunning.",
+        tip_fr:"Le Parc Monceau est le spot de cerisiers le plus célèbre de la Rive Droite — absolument magnifique." },
+
+  9:  { dist:"Opéra", score:2,
+        spots:[
+          {n:"Square Montholon",               t:"cherry",   p:"Late March"},
+          {n:"Square Berlioz",                 t:"magnolia", p:"Mid March"}],
+        tip_en:"Hidden gems between Haussmann boulevards — perfect for a quiet spring stroll.",
+        tip_fr:"Des joyaux cachés entre les boulevards haussmanniens — idéal pour une balade printanière tranquille." },
+
+  10: { dist:"Entrepôt", score:3,
+        spots:[
+          {n:"Canal Saint-Martin (berges)",    t:"cherry",   p:"Late March"},
+          {n:"Square Villemin",                t:"magnolia", p:"Mid March"},
+          {n:"Square Alibert",                 t:"cherry",   p:"Late March"}],
+        tip_en:"Cherry blossoms along Canal Saint-Martin are uniquely atmospheric — the water reflections are magical.",
+        tip_fr:"Les cerisiers le long du Canal Saint-Martin sont uniques — les reflets dans l'eau sont magiques." },
+
+  11: { dist:"Popincourt", score:3,
+        spots:[
+          {n:"Coulée Verte René-Dumont",        t:"cherry",   p:"Late March"},
+          {n:"Square de la Roquette",           t:"cherry",   p:"Late March"},
+          {n:"Square Maurice Gardette",         t:"magnolia", p:"Mid March"}],
+        tip_en:"The Coulée Verte elevated walkway offers cherry trees at eye-level — a unique perspective!",
+        tip_fr:"La Coulée Verte surélevée offre des cerisiers à hauteur d'yeux — une perspective unique !" },
+
+  12: { dist:"Reuilly", score:5,
+        spots:[
+          {n:"Bois de Vincennes",               t:"cherry",   p:"Late Mar – Mid Apr"},
+          {n:"Coulée Verte",                    t:"cherry",   p:"Late March"},
+          {n:"Parc Floral de Paris",            t:"magnolia", p:"Mid March"},
+          {n:"Bercy Park",                      t:"cherry",   p:"Late March"}],
+        tip_en:"Bois de Vincennes is the BIGGEST cherry blossom destination in Paris — absolutely not to be missed!",
+        tip_fr:"Le Bois de Vincennes est LA plus grande destination pour les cerisiers à Paris — absolument incontournable !" },
+
+  13: { dist:"Gobelins", score:3,
+        spots:[
+          {n:"Parc de Choisy",                  t:"cherry",   p:"Late March"},
+          {n:"Parc Kellermann",                 t:"magnolia", p:"Mid March"},
+          {n:"Sq. de la Butte-aux-Cailles",     t:"cherry",   p:"Late March"}],
+        tip_en:"Parc de Choisy is a favourite hanami spot for Paris's Chinese community — a lively atmosphere.",
+        tip_fr:"Le Parc de Choisy est un lieu de hanami apprécié de la communauté chinoise — très animé." },
+
+  14: { dist:"Observatoire", score:4,
+        spots:[
+          {n:"Parc Montsouris (cerisiers)",      t:"cherry",   p:"Late March"},
+          {n:"Parc Montsouris (magnolias)",      t:"magnolia", p:"Mid March"},
+          {n:"Sq. du Moulin de la Vierge",       t:"cherry",   p:"Late March"}],
+        tip_en:"Parc Montsouris offers one of the best mixed collections of cherry and magnolia in Paris.",
+        tip_fr:"Le Parc Montsouris offre l'une des meilleures collections mixtes de cerisiers et magnolias de Paris." },
+
+  15: { dist:"Vaugirard", score:4,
+        spots:[
+          {n:"Parc André Citroën",              t:"magnolia", p:"Mid March"},
+          {n:"Parc Georges Brassens",           t:"cherry",   p:"Late March"},
+          {n:"Sq. de la Croix-Nivert",          t:"cherry",   p:"Late March"}],
+        tip_en:"Parc André Citroën's magnolias bloom against a striking modern backdrop — very photogenic.",
+        tip_fr:"Les magnolias du Parc André Citroën fleurissent sur un fond moderne saisissant — très photogénique." },
+
+  16: { dist:"Passy", score:5,
+        spots:[
+          {n:"Parc de Bagatelle (cerisiers)",    t:"cherry",   p:"Late Mar – Mid Apr"},
+          {n:"Parc de Bagatelle (magnolias)",    t:"magnolia", p:"Early March"},
+          {n:"Bois de Boulogne",                 t:"cherry",   p:"Late March"},
+          {n:"Jardin du Trocadéro",              t:"magnolia", p:"Mid March"}],
+        tip_en:"Bagatelle is THE destination — it hosts the famous annual Hanami festival every April. Go early!",
+        tip_fr:"Bagatelle est LA destination — le célèbre festival Hanami s'y tient chaque avril. Arrivez tôt !" },
+
+  17: { dist:"Batignolles-Monceau", score:3,
+        spots:[
+          {n:"Parc Martin Luther King",          t:"cherry",   p:"Late March"},
+          {n:"Square des Batignolles",           t:"magnolia", p:"Mid March"},
+          {n:"Square Léon",                      t:"cherry",   p:"Late March"}],
+        tip_en:"The eco-friendly Parc Clichy-Batignolles Martin Luther King is full of spring colour.",
+        tip_fr:"Le Parc Clichy-Batignolles Martin Luther King est plein de couleurs printanières." },
+
+  18: { dist:"Butte-Montmartre", score:4,
+        spots:[
+          {n:"Square Louise Michel",             t:"cherry",   p:"Late March"},
+          {n:"Parc de la Turlure",               t:"magnolia", p:"Mid March"},
+          {n:"Square Suzanne Buisson",           t:"cherry",   p:"Late March"}],
+        tip_en:"Cherry blossoms below Sacré-Cœur are breathtaking — arrive early on weekends to beat crowds.",
+        tip_fr:"Les cerisiers sous le Sacré-Cœur sont à couper le souffle — arrivez tôt le week-end." },
+
+  19: { dist:"Buttes-Chaumont", score:4,
+        spots:[
+          {n:"Buttes-Chaumont (cerisiers)",      t:"cherry",   p:"Late March"},
+          {n:"Buttes-Chaumont (magnolias)",      t:"magnolia", p:"Mid March"},
+          {n:"Parc de la Villette",              t:"cherry",   p:"Late March"}],
+        tip_en:"Buttes-Chaumont is one of Paris's most beautiful parks — the hilly terrain adds drama to blooms.",
+        tip_fr:"Les Buttes-Chaumont est l'un des plus beaux parcs de Paris — le relief collinaire magnifie les floraisons." },
+
+  20: { dist:"Ménilmontant", score:3,
+        spots:[
+          {n:"Cimetière du Père Lachaise",       t:"magnolia", p:"Mid March"},
+          {n:"Parc de Belleville",               t:"cherry",   p:"Late March"},
+          {n:"Sq. Martin Nadaud",                t:"cherry",   p:"Late March"}],
+        tip_en:"Père Lachaise's magnolia alleys are surprisingly peaceful and beautiful — a hidden gem.",
+        tip_fr:"Les allées de magnolias du Père Lachaise sont paisibles et étonnamment belles — un joyau caché." },
+};
+
+// ─── HEX GRID ─────────────────────────────────────────────────────────────────
+const POS = {
+  18:[3,0], 19:[4,0],
+  17:[2,1],  9:[3,1], 10:[4,1], 20:[5,1],
+  16:[1,2],  8:[2,2],  2:[3,2],  3:[4,2], 11:[5,2],
+             7:[2,3],  1:[3,3],  4:[4,3], 12:[5,3],
+  15:[1,4],  6:[2,4],  5:[3,4], 13:[4,4],
+                       14:[3,5],
+};
+
+const COLORS = ['#fcdce8','#f8b8d0','#f090b0','#e0608a','#c0305a'];
+function col(s){ return COLORS[s-1]; }
+
+const R = 50, W = R * Math.sqrt(3), H = R * 2, SX = 82, SY = 52;
+
+function hexCenter(c, r){
+  return [ c * W + (r % 2 === 1 ? W / 2 : 0) + SX,  r * H * 0.75 + SY ];
+}
+function hexPts(cx, cy){
+  return Array.from({length:6}, (_,i) => {
+    const a = Math.PI / 180 * (60 * i - 90);
+    return `${(cx + R * Math.cos(a)).toFixed(1)},${(cy + R * Math.sin(a)).toFixed(1)}`;
+  }).join(' ');
+}
+
+// ─── BUILD HEX MAP ────────────────────────────────────────────────────────────
+const g   = document.getElementById('hexG');
+const tip = document.getElementById('tip');
+const NS  = 'http://www.w3.org/2000/svg';
+let   sel = null;
+
+function svgEl(tag, attrs){
+  const el = document.createElementNS(NS, tag);
+  Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k,v));
+  return el;
+}
+function svgTxt(txt, attrs){
+  const el = svgEl('text', attrs);
+  el.textContent = txt;
+  return el;
+}
+
+Object.entries(POS).forEach(([num, [c, r]]) => {
+  const n = parseInt(num), d = D[n];
+  const [cx, cy] = hexCenter(c, r);
+  const grp = svgEl('g', {'class':'arr-hex', 'data-n':n});
+
+  grp.appendChild(svgEl('polygon', {points:hexPts(cx,cy), fill:col(d.score)}));
+  grp.appendChild(svgTxt(n===1?'1er':n+'e', {'class':'arr-num', x:cx, y:cy-8}));
+
+  const shortD = d.dist.length > 11 ? d.dist.substring(0,10)+'…' : d.dist;
+  grp.appendChild(svgTxt(shortD, {'class':'arr-sub', x:cx, y:cy+8}));
+
+  const hasC = d.spots.some(s=>s.t==='cherry'), hasM = d.spots.some(s=>s.t==='magnolia');
+  const both = hasC && hasM;
+  let ix = cx - (both ? 8 : 0);
+  // Cherry emoji 🌸
+  if(hasC){
+    const t=svgEl('text',{'text-anchor':'middle','dominant-baseline':'middle','font-size':'13',x:ix,y:cy+26});
+    t.textContent='🌸'; grp.appendChild(t); ix+=16;
+  }
+  // Magnolia ✿ in purple — visually distinct from cherry
+  if(hasM){
+    const t=svgEl('text',{'text-anchor':'middle','dominant-baseline':'middle','font-size':'14','fill':'#9050c8','font-weight':'bold',x:ix,y:cy+26});
+    t.textContent='✿'; grp.appendChild(t);
+  }
+
+  grp.addEventListener('mouseenter', e => {
+    tip.style.display='block';
+    tip.textContent=`${n}e · ${d.dist} · ${T[LANG].spots(d.score)}`;
+  });
+  grp.addEventListener('mousemove',  e => { tip.style.left=e.clientX+'px'; tip.style.top=(e.clientY-4)+'px'; });
+  grp.addEventListener('mouseleave', ()=> tip.style.display='none');
+  grp.addEventListener('click', () => {
+    if(sel!==null){ const p=g.querySelector(`[data-n="${sel}"]`); if(p) p.classList.remove('active'); }
+    sel=n; grp.classList.add('active'); renderInfo(n);
+  });
+  g.appendChild(grp);
+});
+
+// ─── RENDER INFO PANEL ───────────────────────────────────────────────────────
+function renderInfo(n){
+  if(n===null){ renderPlaceholder(); return; }
+  const d=D[n], t=T[LANG];
+  const clr=col(d.score), ord=n===1?(LANG==='fr'?'1er':'1st'):n+'e';
+  const stars='★'.repeat(d.score)+'☆'.repeat(5-d.score);
+  const tip_txt = LANG==='fr' ? d.tip_fr : d.tip_en;
+
+  const spots = d.spots.map(s=>`
+    <li class="spot-item" data-place="${s.n.replace(/"/g,'&quot;')}">
+      <span class="sname">
+        <span class="sname-text">${s.n}</span>
+        <span class="map-pin" title="Open in Google Maps">📍</span>
+      </span>
+      <span class="spot-meta">
+        <span class="tag ${s.t}">${s.t==='cherry' ? t.cherry : t.magnolia}</span>
+        <span class="peak">⏱ ${peak(s.p)}</span>
+      </span>
+    </li>`).join('');
+
+  document.getElementById('infoCard').innerHTML=`
+    <div class="info-header">
+      <div class="num-badge" style="background:${clr}">${ord}</div>
+      <div class="info-title">
+        <h3>${t.arrLabel(n)}</h3>
+        <div class="dist">${d.dist}</div>
+      </div>
+    </div>
+    <div class="stars-row"><span>${t.intensity}</span><span class="stars">${stars}</span></div>
+    <ul class="spot-list">${spots}</ul>
+    <div class="tip-box">${tip_txt}</div>`;
+
+  // Attach Google Maps click handlers to each spot
+  document.querySelectorAll('#infoCard .spot-item').forEach(el => {
+    el.addEventListener('click', () => openMap(el.dataset.place));
+  });
+}
+
+function renderPlaceholder(){
+  const t=T[LANG];
+  document.getElementById('infoCard').innerHTML=`
+    <div class="placeholder">
+      <span class="ico">🌸</span>
+      <p><strong>${t.ph1}</strong><br>${t.ph2}</p>
+    </div>`;
+}
+
+// ─── RENDER LEGEND ───────────────────────────────────────────────────────────
+function renderLegend(){
+  const t=T[LANG];
+  const items=[
+    {c:'#c0305a', txt:t.leg5},{c:'#e0608a', txt:t.leg4},{c:'#f090b0', txt:t.leg3},
+    {c:'#f8b8d0', txt:t.leg2},{c:'#fcdce8', txt:t.leg1},
+  ];
+  document.getElementById('legend').innerHTML =
+    items.map(i=>`<div class="leg"><div class="leg-sq" style="background:${i.c}"></div>${i.txt}</div>`).join('') +
+    `<div class="leg" style="margin-left:6px">${t.legTypes}</div>`;
+}
+
+// ─── RENDER CALENDAR ─────────────────────────────────────────────────────────
+function renderCalendar(){
+  const t=T[LANG];
+  document.getElementById('cal-title').textContent = t.calTitle.replace(/&#[0-9]+;/g,'');
+  document.getElementById('cal-title').innerHTML   = t.calTitle;
+  document.getElementById('cal-grid').innerHTML = t.cal.map(ph=>`
+    <div class="cal-phase ${ph.cls}">
+      <h4>${ph.h}</h4>
+      <ul>${ph.li.map(i=>`<li>${i}</li>`).join('')}</ul>
+    </div>`).join('');
+}
+
+// ─── LANGUAGE SWITCH ─────────────────────────────────────────────────────────
+function setLang(l){
+  LANG=l;
+  document.getElementById('btn-en').classList.toggle('active', l==='en');
+  document.getElementById('btn-fr').classList.toggle('active', l==='fr');
+  document.getElementById('h-title').innerHTML = T[l].title;
+  document.getElementById('h-sub').innerHTML   = T[l].subtitle;
+  renderLegend();
+  renderCalendar();
+  renderInfo(sel);
+  // update tooltips on hover (live via LANG var, no action needed)
+}
+
+// ─── GOOGLE MAPS ─────────────────────────────────────────────────────────────
+function openMap(name){
+  // Strip parenthetical suffixes like "(cerisiers)" before searching
+  const clean = name.replace(/\s*\(.*?\)\s*$/,'').trim();
+  const q = encodeURIComponent(clean + ', Paris, France');
+  window.open('https://www.google.com/maps/search/?api=1&query=' + q, '_blank');
+}
+
+// ─── PETALS ───────────────────────────────────────────────────────────────────
+const EMOJIS=['🌸','🌸','🌸','🌺','✿','❀'];
+const pc=document.getElementById('petals');
+for(let i=0;i<20;i++){
+  const p=document.createElement('div');
+  p.className='petal';
+  p.textContent=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+  p.style.cssText=`left:${Math.random()*100}vw;font-size:${11+Math.random()*13}px;animation-duration:${7+Math.random()*11}s;animation-delay:${Math.random()*14}s;opacity:${.35+Math.random()*.55};`;
+  pc.appendChild(p);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+setLang('en');
+</script>
+</body>
+</html>
