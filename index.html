@@ -393,7 +393,8 @@ const D = {
           {n:"Bois de Vincennes",               t:"cherry",   p:"Late Mar – Mid Apr"},
           {n:"Coulée Verte",                    t:"cherry",   p:"Late March"},
           {n:"Parc Floral de Paris",            t:"magnolia", p:"Mid March"},
-          {n:"Bercy Park",                      t:"cherry",   p:"Late March"}],
+          {n:"Bercy Park",                      t:"cherry",   p:"Late March"},
+          {n:"Square Charles Péguy",            t:"cherry",   p:"Late March"}],
         tip_en:"Bois de Vincennes is the BIGGEST cherry blossom destination in Paris — absolutely not to be missed!",
         tip_fr:"Le Bois de Vincennes est LA plus grande destination pour les cerisiers à Paris — absolument incontournable !" },
 
@@ -426,7 +427,8 @@ const D = {
           {n:"Parc de Bagatelle (cerisiers)",    t:"cherry",   p:"Late Mar – Mid Apr"},
           {n:"Parc de Bagatelle (magnolias)",    t:"magnolia", p:"Early March"},
           {n:"Bois de Boulogne",                 t:"cherry",   p:"Late March"},
-          {n:"Jardin du Trocadéro",              t:"magnolia", p:"Mid March"}],
+          {n:"Jardin du Trocadéro",              t:"magnolia", p:"Mid March"},
+          {n:"Jardin du Ranelagh",               t:"magnolia", p:"Mid March"}],
         tip_en:"Bagatelle is THE destination — it hosts the famous annual Hanami festival every April. Go early!",
         tip_fr:"Bagatelle est LA destination — le célèbre festival Hanami s'y tient chaque avril. Arrivez tôt !" },
 
@@ -510,7 +512,7 @@ Object.entries(POS).forEach(([num, [c, r]]) => {
   const [cx, cy] = hexCenter(c, r);
   const grp = svgEl('g', {'class':'arr-hex', 'data-n':n});
 
-  grp.appendChild(svgEl('polygon', {points:hexPts(cx,cy), fill:col(d.score)}));
+  grp.appendChild(svgEl('polygon', {points:hexPts(cx,cy), fill:col(d.spots.length)}));
   grp.appendChild(svgTxt(n===1?'1er':n+'e', {'class':'arr-num', x:cx, y:cy-8}));
 
   const shortD = d.dist.length > 11 ? d.dist.substring(0,10)+'…' : d.dist;
@@ -532,7 +534,7 @@ Object.entries(POS).forEach(([num, [c, r]]) => {
 
   grp.addEventListener('mouseenter', e => {
     tip.style.display='block';
-    tip.textContent=`${n}e · ${d.dist} · ${T[LANG].spots(d.score)}`;
+    tip.textContent=`${n}e · ${d.dist} · ${T[LANG].spots(d.spots.length)}`;
   });
   grp.addEventListener('mousemove',  e => { tip.style.left=e.clientX+'px'; tip.style.top=(e.clientY-4)+'px'; });
   grp.addEventListener('mouseleave', ()=> tip.style.display='none');
@@ -547,8 +549,8 @@ Object.entries(POS).forEach(([num, [c, r]]) => {
 function renderInfo(n){
   if(n===null){ renderPlaceholder(); return; }
   const d=D[n], t=T[LANG];
-  const clr=col(d.score), ord=n===1?(LANG==='fr'?'1er':'1st'):n+'e';
-  const stars='★'.repeat(d.score)+'☆'.repeat(5-d.score);
+  const sc=d.spots.length, clr=col(sc), ord=n===1?(LANG==='fr'?'1er':'1st'):n+'e';
+  const stars='★'.repeat(sc)+'☆'.repeat(5-sc);
   const tip_txt = LANG==='fr' ? d.tip_fr : d.tip_en;
 
   const spots = d.spots.map(s=>`
@@ -632,7 +634,7 @@ function openMap(name){
   // Strip parenthetical suffixes like "(cerisiers)" before searching
   const clean = name.replace(/\s*\(.*?\)\s*$/,'').trim();
   const q = encodeURIComponent(clean + ', Paris, France');
-  window.open('https://www.google.com/maps/search/?api=1&query=' + q, '_blank');
+  window.open('https://www.google.com/maps/search/?api=1&query=' + q, '_blank', 'noopener,noreferrer');
 }
 
 // ─── PETALS ───────────────────────────────────────────────────────────────────
