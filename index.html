@@ -105,13 +105,15 @@ svg.paris-map {
 }
 .arr-hex:hover  polygon { filter:brightness(1.12); stroke-width:2.5; }
 .arr-hex.active polygon { stroke:var(--pink-deep); stroke-width:3.5; filter:brightness(1.08); }
-.arr-num  { font-family:Arial,sans-serif; font-weight:800; font-size:13px; fill:rgba(255,255,255,.95); text-anchor:middle; dominant-baseline:middle; pointer-events:none; }
-.arr-sub  { font-family:Arial,sans-serif; font-size:7px;   fill:rgba(255,255,255,.80); text-anchor:middle; dominant-baseline:middle; pointer-events:none; }
+.arr-num  { font-family:Arial,sans-serif; font-weight:800; font-size:14px; fill:rgba(255,255,255,.97); text-anchor:middle; dominant-baseline:middle; pointer-events:none; }
+.arr-sub  { font-family:Arial,sans-serif; font-size:8px; font-weight:700; fill:rgba(255,255,255,.92);
+            text-anchor:middle; dominant-baseline:middle; pointer-events:none;
+            paint-order:stroke; stroke:rgba(0,0,0,.18); stroke-width:2px; stroke-linejoin:round; }
 .arr-icon { font-size:9px; text-anchor:middle; dominant-baseline:middle; pointer-events:none; }
-.seine-bg  { fill:none; stroke:#cce8ff; stroke-width:8; opacity:.35; stroke-linecap:round; }
-.seine     { fill:none; stroke:url(#seineGrad); stroke-width:3.5; opacity:.85; stroke-linecap:round; stroke-linejoin:round; }
-.seine-label { font-family:Georgia,serif; font-size:11px; fill:#2a80c8; font-style:italic; font-weight:600;
-               paint-order:stroke; stroke:#fff; stroke-width:3px; stroke-linejoin:round; opacity:.92; }
+.seine-bg  { fill:none; stroke:#90ccf0; stroke-width:12; opacity:.45; stroke-linecap:round; }
+.seine     { fill:none; stroke:#2288cc; stroke-width:5; opacity:.75; stroke-linecap:round; stroke-linejoin:round; }
+.seine-label { font-family:Georgia,serif; font-size:12px; fill:#1a6aaa; font-style:italic; font-weight:700;
+               paint-order:stroke; stroke:#fff; stroke-width:4px; stroke-linejoin:round; opacity:1; }
 
 /* ── INFO PANEL ── */
 .info-panel {
@@ -291,7 +293,7 @@ svg.paris-map {
       </defs>
       <!-- La Seine — soft glow backing + main line + label -->
       <path class="seine-bg" d="M 42,300 C 95,296 148,288 210,280 C 258,274 292,271 328,273 C 368,275 398,267 445,260 C 492,253 555,249 638,245"/>
-      <path class="seine" filter="url(#riverGlow)"
+      <path class="seine"
             d="M 42,300 C 95,296 148,288 210,280 C 258,274 292,271 328,273 C 368,275 398,267 445,260 C 492,253 555,249 638,245"/>
       <path id="seinePath" fill="none"
             d="M 42,300 C 95,296 148,288 210,280 C 258,274 292,271 328,273 C 368,275 398,267 445,260 C 492,253 555,249 638,245"/>
@@ -593,10 +595,15 @@ Object.entries(POS).forEach(([num, [c, r]]) => {
   const grp = svgEl('g', {'class':'arr-hex', 'data-n':n});
 
   grp.appendChild(svgEl('polygon', {points:hexPts(cx,cy), fill:col(d.spots.length)}));
-  grp.appendChild(svgTxt(n===1?'1er':n+'e', {'class':'arr-num', x:cx, y:cy-8}));
+  grp.appendChild(svgTxt(n===1?'1er':n+'e', {'class':'arr-num', x:cx, y:cy-10}));
 
+  // Landmark badge — dark pill behind text for legibility
   const shortL = d.landmark.length > 11 ? d.landmark.substring(0,10)+'…' : d.landmark;
-  grp.appendChild(svgTxt(shortL, {'class':'arr-sub', x:cx, y:cy+8}));
+  const badgeW = Math.min(shortL.length * 5.2 + 10, 78);
+  const badge = svgEl('rect',{x:cx-badgeW/2, y:cy+1, width:badgeW, height:13, rx:4,
+                               fill:'rgba(0,0,0,.28)', 'pointer-events':'none'});
+  grp.appendChild(badge);
+  grp.appendChild(svgTxt(shortL, {'class':'arr-sub', x:cx, y:cy+9}));
 
   const hasC = d.spots.some(s=>s.t==='cherry'), hasM = d.spots.some(s=>s.t==='magnolia');
   const both = hasC && hasM;
