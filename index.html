@@ -108,7 +108,8 @@ svg.paris-map {
 .arr-num  { font-family:Arial,sans-serif; font-weight:800; font-size:13px; fill:rgba(255,255,255,.95); text-anchor:middle; dominant-baseline:middle; pointer-events:none; }
 .arr-sub  { font-family:Arial,sans-serif; font-size:7px;   fill:rgba(255,255,255,.80); text-anchor:middle; dominant-baseline:middle; pointer-events:none; }
 .arr-icon { font-size:9px; text-anchor:middle; dominant-baseline:middle; pointer-events:none; }
-.seine    { fill:none; stroke:#b0d4f0; stroke-width:9; opacity:.55; stroke-linecap:round; }
+.seine    { fill:none; stroke:url(#seineGrad); stroke-width:4; opacity:.7; stroke-linecap:round; stroke-linejoin:round; }
+.seine-label { font-family:Georgia,serif; font-size:9px; fill:#6aabda; font-style:italic; opacity:.75; }
 
 /* ── INFO PANEL ── */
 .info-panel {
@@ -273,7 +274,20 @@ svg.paris-map {
   <div class="map-side">
     <div class="legend" id="legend"></div>
     <svg class="paris-map" viewBox="0 0 650 515" id="mapSvg">
-<g id="hexG"></g>
+      <defs>
+        <linearGradient id="seineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stop-color="#a8d8f0"/>
+          <stop offset="50%"  stop-color="#6ab4e8"/>
+          <stop offset="100%" stop-color="#a8d8f0"/>
+        </linearGradient>
+      </defs>
+      <!-- La Seine -->
+      <path class="seine" d="M 45,295 C 120,290 185,280 270,272 C 340,265 400,260 480,256 C 540,253 590,250 630,247"/>
+      <text class="seine-label">
+        <textPath href="#seinePath" startOffset="38%">la Seine</textPath>
+      </text>
+      <path id="seinePath" fill="none" d="M 45,295 C 120,290 185,280 270,272 C 340,265 400,260 480,256 C 540,253 590,250 630,247"/>
+      <g id="hexG"></g>
     </svg>
   </div>
 
