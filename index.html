@@ -99,12 +99,12 @@ svg.paris-map {
   filter:drop-shadow(0 4px 18px rgba(180,80,120,.14));
 }
 .arr-hex { cursor:pointer; }
-.arr-hex polygon {
+.arr-hex path {
   stroke:rgba(255,255,255,.85); stroke-width:2;
   transition:filter .18s, stroke-width .18s;
 }
-.arr-hex:hover  polygon { filter:brightness(1.14) saturate(1.15) drop-shadow(0 0 7px rgba(192,48,90,.4)); stroke-width:2.5; }
-.arr-hex.active polygon { stroke:var(--pink-deep); stroke-width:3.5; filter:brightness(1.10) saturate(1.18) drop-shadow(0 0 10px rgba(192,48,90,.5)); }
+.arr-hex:hover  path { filter:brightness(1.14) saturate(1.15) drop-shadow(0 0 7px rgba(192,48,90,.4)); stroke-width:2.5; }
+.arr-hex.active path { stroke:var(--pink-deep); stroke-width:3.5; filter:brightness(1.10) saturate(1.18) drop-shadow(0 0 10px rgba(192,48,90,.5)); }
 .arr-num  { font-family:Arial,sans-serif; font-weight:800; font-size:14px; fill:rgba(255,255,255,.97); text-anchor:middle; dominant-baseline:middle; pointer-events:none; }
 .arr-sub  { font-family:Arial,sans-serif; font-size:8px; font-weight:700; fill:rgba(255,255,255,.92);
             text-anchor:middle; dominant-baseline:middle; pointer-events:none;
@@ -591,11 +591,24 @@ const R = 50, W = R * Math.sqrt(3), H = R * 2, SX = 82, SY = 52;
 function hexCenter(c, r){
   return [ c * W + (r % 2 === 1 ? W / 2 : 0) + SX,  r * H * 0.75 + SY ];
 }
-function hexPts(cx, cy){
-  return Array.from({length:6}, (_,i) => {
+function hexPath(cx, cy, cr=9){
+  // cr = corner radius in SVG units; quadratic bezier rounds each of the 6 vertices
+  const pts = Array.from({length:6}, (_,i) => {
     const a = Math.PI / 180 * (60 * i - 90);
-    return `${(cx + R * Math.cos(a)).toFixed(1)},${(cy + R * Math.sin(a)).toFixed(1)}`;
-  }).join(' ');
+    return [cx + R * Math.cos(a), cy + R * Math.sin(a)];
+  });
+  let d = '';
+  for(let i=0; i<6; i++){
+    const cur=pts[i], prev=pts[(i+5)%6], next=pts[(i+1)%6];
+    const ip=[prev[0]-cur[0], prev[1]-cur[1]], il=Math.hypot(...ip);
+    const op=[next[0]-cur[0], next[1]-cur[1]], ol=Math.hypot(...op);
+    const s=[cur[0]+cr*ip[0]/il, cur[1]+cr*ip[1]/il];  // point before vertex
+    const e=[cur[0]+cr*op[0]/ol, cur[1]+cr*op[1]/ol];  // point after vertex
+    d += i===0 ? `M ${s[0].toFixed(1)},${s[1].toFixed(1)} `
+               : `L ${s[0].toFixed(1)},${s[1].toFixed(1)} `;
+    d += `Q ${cur[0].toFixed(1)},${cur[1].toFixed(1)} ${e[0].toFixed(1)},${e[1].toFixed(1)} `;
+  }
+  return d + 'Z';
 }
 
 // ─── BUILD HEX MAP ────────────────────────────────────────────────────────────
@@ -620,7 +633,7 @@ Object.entries(POS).forEach(([num, [c, r]]) => {
   const [cx, cy] = hexCenter(c, r);
   const grp = svgEl('g', {'class':'arr-hex', 'data-n':n});
 
-  grp.appendChild(svgEl('polygon', {points:hexPts(cx,cy), fill:col(d.spots.length)}));
+  grp.appendChild(svgEl('path', {d:hexPath(cx,cy), fill:col(d.spots.length)}));
 
   // Monument emoji — tourist-map style icon above the arrondissement number
   const iconEl = svgEl('text',{'text-anchor':'middle','dominant-baseline':'middle',
