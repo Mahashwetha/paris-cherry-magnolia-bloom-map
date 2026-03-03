@@ -31,6 +31,10 @@ An interactive map of all 20 Paris arrondissements showing cherry blossom 🌸 a
 Single-file HTML/CSS/JS — no dependencies, no build step.
 Hosted on [Netlify](https://netlify.com).
 
-##Author
-Mahashwetha Rao, Paris
-Co authored with claude prompts
+## Author
+
+**Mahashwetha Rao** · 📍 Paris, France
+
+🔗 [linkedin.com/in/mahashwetha-rao](https://www.linkedin.com/in/mahashwetha-rao/)
+
+*Built with 🌸 and Claude prompts*
