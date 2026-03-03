@@ -194,6 +194,59 @@ svg.paris-map {
 .ph3 { background:#fff0f5; } .ph3 h4 { color:var(--pink-deep); }
 .ph4 { background:#fff8f0; } .ph4 h4 { color:#c06020; }
 
+/* ── AUTHOR CARD ── */
+.author-card {
+  margin-top:12px;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(10px);
+  border-radius:14px;
+  padding:14px 16px;
+  box-shadow:0 2px 14px rgba(180,80,130,.10);
+  border:1px solid rgba(240,160,200,.3);
+  font-family:sans-serif;
+  text-align:center;
+}
+.author-by {
+  font-size:10px;
+  color:#b07090;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+.author-name {
+  font-size:14px;
+  font-weight:800;
+  color:var(--dark);
+  margin-bottom:2px;
+}
+.author-location {
+  font-size:11px;
+  color:#9a6090;
+  font-style:italic;
+  margin-bottom:10px;
+}
+.author-linkedin {
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:5px 14px;
+  border-radius:20px;
+  background:var(--pink-deep);
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
+  text-decoration:none;
+  letter-spacing:.4px;
+  transition:background .18s, transform .12s;
+}
+.author-linkedin:hover {
+  background:#a02050;
+  transform:translateY(-1px);
+}
+.author-linkedin svg {
+  width:13px; height:13px; fill:#fff; flex-shrink:0;
+}
+
 @media(max-width:700px){
   .layout    { flex-direction:column; }
   .info-panel{ width:100%; position:static; }
@@ -208,7 +261,7 @@ svg.paris-map {
 <header>
   <h1 id="h-title">🌸 Paris Cherry Blossom &amp; Magnolia</h1>
   <p  id="h-sub">Interactive map by arrondissement · Click to explore bloom spots &amp; timing</p>
-  <div class="lang-bar">
+   <div class="lang-bar">
     <button class="lang-btn active" id="btn-en" onclick="setLang('en')">🇬🇧 EN</button>
     <button class="lang-btn"        id="btn-fr" onclick="setLang('fr')">🇫🇷 FR</button>
   </div>
@@ -227,6 +280,7 @@ svg.paris-map {
 
   <div class="info-panel">
     <div class="info-card" id="infoCard"></div>
+    <div class="author-card" id="authorCard"></div>
   </div>
 </div>
 
@@ -257,6 +311,7 @@ const T = {
     cherry:      "🌸 Cherry",
     magnolia:    "<span class='mag-sym'>✿</span> Magnolia",
     spots:       n => `${n} spot${n>1?'s':''}`,
+    builtBy:     "Built with 🌸 by",
     cal: [
       { cls:"ph1", h:"Early March — Magnolias open",           li:["<span class='mag-sym'>✿</span> Jardin des Plantes (5e)","<span class='mag-sym'>✿</span> Parc de Bagatelle (16e)","<span class='mag-sym'>✿</span> Père Lachaise (20e)","<span class='mag-sym'>✿</span> Sq. René Viviani (5e)"] },
       { cls:"ph2", h:"Mid March — Magnolias peak",             li:["<span class='mag-sym'>✿</span> Parc Monceau (8e)","<span class='mag-sym'>✿</span> Jardin du Luxembourg (6e)","<span class='mag-sym'>✿</span> Champ de Mars (7e)","🌸 First cherries (5e, 6e)"] },
@@ -281,6 +336,7 @@ const T = {
     cherry:      "🌸 Cerisier",
     magnolia:    "<span class='mag-sym'>✿</span> Magnolia",
     spots:       n => `${n} spot${n>1?'s':''}`,
+    builtBy:     "Créé avec 🌸 par",
     cal: [
       { cls:"ph1", h:"Début mars — Les magnolias s'ouvrent",   li:["<span class='mag-sym'>✿</span> Jardin des Plantes (5e)","<span class='mag-sym'>✿</span> Parc de Bagatelle (16e)","<span class='mag-sym'>✿</span> Père Lachaise (20e)","<span class='mag-sym'>✿</span> Sq. René Viviani (5e)"] },
       { cls:"ph2", h:"Mi-mars — Pic des magnolias",            li:["<span class='mag-sym'>✿</span> Parc Monceau (8e)","<span class='mag-sym'>✿</span> Jardin du Luxembourg (6e)","<span class='mag-sym'>✿</span> Champ-de-Mars (7e)","🌸 Premiers cerisiers (5e, 6e)"] },
@@ -616,6 +672,23 @@ function renderCalendar(){
     </div>`).join('');
 }
 
+// ─── RENDER AUTHOR CARD ──────────────────────────────────────────────────────
+function renderAuthor(){
+  const t = T[LANG];
+  document.getElementById('authorCard').innerHTML = `
+    <div class="author-by">${t.builtBy}</div>
+    <div class="author-name">Mahashwetha Rao</div>
+    <div class="author-location">📍 Paris, France</div>
+    <a class="author-linkedin"
+       href="https://www.linkedin.com/in/mahashwetha/"
+       target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20.447 20.452H17.21v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.984V9h3.102v1.561h.046c.432-.82 1.487-1.684 3.061-1.684 3.274 0 3.878 2.154 3.878 4.956v6.619zM5.337 7.433a1.8 1.8 0 1 1 0-3.6 1.8 1.8 0 0 1 0 3.6zm1.553 13.019H3.783V9h3.107v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+      </svg>
+      LinkedIn
+    </a>`;
+}
+
 // ─── LANGUAGE SWITCH ─────────────────────────────────────────────────────────
 function setLang(l){
   LANG=l;
@@ -626,6 +699,7 @@ function setLang(l){
   renderLegend();
   renderCalendar();
   renderInfo(sel);
+  renderAuthor();
   // update tooltips on hover (live via LANG var, no action needed)
 }
 
