@@ -110,10 +110,10 @@ svg.paris-map {
             text-anchor:middle; dominant-baseline:middle; pointer-events:none;
             paint-order:stroke; stroke:rgba(0,0,0,.18); stroke-width:2px; stroke-linejoin:round; }
 .arr-icon { font-size:9px; text-anchor:middle; dominant-baseline:middle; pointer-events:none; }
-.seine-bg  { fill:none; stroke:#90ccf0; stroke-width:12; opacity:.45; stroke-linecap:round; }
-.seine     { fill:none; stroke:#2288cc; stroke-width:5; opacity:.75; stroke-linecap:round; stroke-linejoin:round; }
-.seine-label { font-family:Georgia,serif; font-size:12px; fill:#1a6aaa; font-style:italic; font-weight:700;
-               paint-order:stroke; stroke:#fff; stroke-width:4px; stroke-linejoin:round; opacity:1; }
+.seine-bg  { fill:none; stroke:#90ccf0; stroke-width:5; opacity:.30; stroke-linecap:round; }
+.seine     { fill:none; stroke:#2288cc; stroke-width:2; opacity:.55; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:6,3; }
+.seine-label { font-family:Georgia,serif; font-size:10px; fill:#1a6aaa; font-style:italic; font-weight:700;
+               paint-order:stroke; stroke:#fff; stroke-width:3px; stroke-linejoin:round; opacity:.9; }
 
 /* ── INFO PANEL ── */
 .info-panel {
@@ -299,7 +299,7 @@ svg.paris-map {
       <path id="seinePath" fill="none"
             d="M 42,300 C 95,296 148,288 210,280 C 258,274 292,271 328,273 C 368,275 398,267 445,260 C 492,253 555,249 638,245"/>
       <text class="seine-label">
-        <textPath href="#seinePath" startOffset="32%">〰 la Seine</textPath>
+        <textPath href="#seinePath" startOffset="4%">〰 la Seine</textPath>
       </text>
     </svg>
   </div>
@@ -547,6 +547,30 @@ const D = {
         tip_fr:"Les allées de magnolias du Père Lachaise sont paisibles et étonnamment belles — un joyau caché." },
 };
 
+// ─── MONUMENT ICONS (tourist-map style) ───────────────────────────────────────
+const ICONS = {
+  1:'🖼️',  // Louvre museum
+  2:'🏦',  // Palais Brongniart (Bourse)
+  3:'🏘️', // Medieval Marais streets
+  4:'⛪',  // Notre-Dame cathedral
+  5:'📚',  // Latin Quarter / bookshops
+  6:'☕',  // St-Germain café culture
+  7:'🗼',  // Eiffel Tower
+  8:'⭐',  // Champs-Élysées glamour
+  9:'🎭',  // Opéra Garnier
+  10:'🛶', // Canal Saint-Martin
+  11:'🔔', // Colonne de Juillet / Bastille
+  12:'🌳', // Bois de Vincennes forest
+  13:'🏮', // Chinatown lantern
+  14:'🔭', // Observatoire de Paris
+  15:'🎈', // Parc André Citroën hot-air balloon
+  16:'🏛️', // Palais de Chaillot / Trocadéro
+  17:'🌱', // Batignolles eco park
+  18:'🎨', // Montmartre artists
+  19:'🎠', // La Villette funfair / Géode
+  20:'🌹', // Père Lachaise (people leave roses)
+};
+
 // ─── HEX GRID ─────────────────────────────────────────────────────────────────
 const POS = {
   18:[3,0], 19:[4,0],
@@ -595,27 +619,35 @@ Object.entries(POS).forEach(([num, [c, r]]) => {
   const grp = svgEl('g', {'class':'arr-hex', 'data-n':n});
 
   grp.appendChild(svgEl('polygon', {points:hexPts(cx,cy), fill:col(d.spots.length)}));
-  grp.appendChild(svgTxt(n===1?'1er':n+'e', {'class':'arr-num', x:cx, y:cy-10}));
+
+  // Monument emoji — tourist-map style icon above the arrondissement number
+  const iconEl = svgEl('text',{'text-anchor':'middle','dominant-baseline':'middle',
+                                'font-size':'15', x:cx, y:cy-27, 'pointer-events':'none'});
+  iconEl.textContent = ICONS[n] || '📍';
+  grp.appendChild(iconEl);
+
+  // Arrondissement number (shifted slightly down to make room for icon)
+  grp.appendChild(svgTxt(n===1?'1er':n+'e', {'class':'arr-num', x:cx, y:cy-8}));
 
   // Landmark badge — dark pill behind text for legibility
   const shortL = d.landmark.length > 11 ? d.landmark.substring(0,10)+'…' : d.landmark;
   const badgeW = Math.min(shortL.length * 5.2 + 10, 78);
-  const badge = svgEl('rect',{x:cx-badgeW/2, y:cy+1, width:badgeW, height:13, rx:4,
+  const badge = svgEl('rect',{x:cx-badgeW/2, y:cy+4, width:badgeW, height:13, rx:4,
                                fill:'rgba(0,0,0,.28)', 'pointer-events':'none'});
   grp.appendChild(badge);
-  grp.appendChild(svgTxt(shortL, {'class':'arr-sub', x:cx, y:cy+9}));
+  grp.appendChild(svgTxt(shortL, {'class':'arr-sub', x:cx, y:cy+12}));
 
   const hasC = d.spots.some(s=>s.t==='cherry'), hasM = d.spots.some(s=>s.t==='magnolia');
   const both = hasC && hasM;
   let ix = cx - (both ? 8 : 0);
   // Cherry emoji 🌸
   if(hasC){
-    const t=svgEl('text',{'text-anchor':'middle','dominant-baseline':'middle','font-size':'13',x:ix,y:cy+26});
-    t.textContent='🌸'; grp.appendChild(t); ix+=16;
+    const t=svgEl('text',{'text-anchor':'middle','dominant-baseline':'middle','font-size':'12',x:ix,y:cy+28});
+    t.textContent='🌸'; grp.appendChild(t); ix+=15;
   }
   // Magnolia ✿ in purple — visually distinct from cherry
   if(hasM){
-    const t=svgEl('text',{'text-anchor':'middle','dominant-baseline':'middle','font-size':'14','fill':'#9050c8','font-weight':'bold',x:ix,y:cy+26});
+    const t=svgEl('text',{'text-anchor':'middle','dominant-baseline':'middle','font-size':'13','fill':'#9050c8','font-weight':'bold',x:ix,y:cy+28});
     t.textContent='✿'; grp.appendChild(t);
   }
 
