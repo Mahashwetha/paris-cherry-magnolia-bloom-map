@@ -292,12 +292,6 @@ svg.paris-map {
           <feGaussianBlur stdDeviation="2.5" result="blur"/>
           <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
-        <!-- Parchment map background gradient -->
-        <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stop-color="#fef7ef"/>
-          <stop offset="45%"  stop-color="#fff5f8"/>
-          <stop offset="100%" stop-color="#f8f0ee"/>
-        </linearGradient>
         <!-- Hex radial gradients — light centre → rich edge, one per score level -->
         <radialGradient id="hg1" cx="50%" cy="42%" r="62%">
           <stop offset="0%"   stop-color="#fff8fb"/>
@@ -320,8 +314,6 @@ svg.paris-map {
           <stop offset="100%" stop-color="#c0305a"/>
         </radialGradient>
       </defs>
-      <!-- Parchment map background -->
-      <rect width="650" height="515" rx="14" fill="url(#bgGrad)" opacity=".92"/>
       <g id="hexG"></g>
       <!-- La Seine — drawn AFTER hexes so it overlays the tiles -->
       <path class="seine-bg" d="M 42,300 C 95,296 148,288 210,280 C 258,274 292,271 328,273 C 368,275 398,267 445,260 C 492,253 555,249 638,245"/>
