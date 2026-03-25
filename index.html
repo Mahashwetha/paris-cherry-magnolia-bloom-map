@@ -806,13 +806,31 @@ for(let i=0;i<20;i++){
 setLang('en');
 
 // ─── VISIT COUNTER ────────────────────────────────────────────────────────────
-fetch('/.netlify/functions/counter')
-  .then(r => r.json())
-  .then(d => {
-    const el = document.getElementById('visit-count');
-    if (el) el.textContent = d.visits;
-  })
-  .catch(() => {});
+(function() {
+  const VISITED_KEY = 'pb_visited';
+  const alreadyCounted = localStorage.getItem(VISITED_KEY);
+
+  if (!alreadyCounted) {
+    // First time — count + show
+    fetch('/.netlify/functions/counter')
+      .then(r => r.json())
+      .then(d => {
+        const el = document.getElementById('visit-count');
+        if (el) el.textContent = d.visits;
+        localStorage.setItem(VISITED_KEY, '1');
+      })
+      .catch(() => {});
+  } else {
+    // Returning visitor — just fetch current count, don't increment
+    fetch('/.netlify/functions/counter?readonly=1')
+      .then(r => r.json())
+      .then(d => {
+        const el = document.getElementById('visit-count');
+        if (el) el.textContent = d.visits;
+      })
+      .catch(() => {});
+  }
+})();
 </script>
 
 <div id="visit-counter-badge" style="
