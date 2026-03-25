@@ -804,6 +804,29 @@ for(let i=0;i<20;i++){
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 setLang('en');
+
+// ─── VISIT COUNTER ────────────────────────────────────────────────────────────
+fetch('/.netlify/functions/counter')
+  .then(r => r.json())
+  .then(d => {
+    const el = document.getElementById('visit-count');
+    if (el) el.textContent = d.visits;
+  })
+  .catch(() => {});
 </script>
+
+<div id="visit-counter-badge" style="
+  position:fixed;bottom:14px;right:14px;
+  background:rgba(42,21,48,0.82);
+  color:#f8b8d0;
+  font-family:sans-serif;font-size:12px;
+  padding:5px 11px;border-radius:20px;
+  backdrop-filter:blur(6px);
+  z-index:9999;pointer-events:none;
+  border:1px solid rgba(224,96,138,0.35);
+">
+  🌸 <span id="visit-count">...</span> visitors
+</div>
+
 </body>
 </html>
