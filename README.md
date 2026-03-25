@@ -2,7 +2,7 @@
 
 An interactive map of all 20 Paris arrondissements showing cherry blossom 🌸 and magnolia ✿ bloom spots, timings, and tips.
 
-**Live site →** https://paris-cherry-magnolia-bloom-map.netlify.app/
+**Live site →** https://parischerrymagnoliabloommap.vercel.app/
 
 ## Features
 - 🗺️ Hex grid map of Paris — click any arrondissement for details
@@ -29,7 +29,7 @@ An interactive map of all 20 Paris arrondissements showing cherry blossom 🌸 a
 
 ## Tech
 Single-file HTML/CSS/JS — no dependencies, no build step.
-Hosted on [Netlify](https://netlify.com).
+Hosted on [Vercel](https://vercel.com).
 
 ## Author
 
