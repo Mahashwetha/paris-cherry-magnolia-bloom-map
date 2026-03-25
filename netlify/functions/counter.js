@@ -7,7 +7,8 @@ exports.handler = async () => {
   try {
     const readRes  = await fetch(`${BASE}/latest`, { headers: heads });
     const readData = await readRes.json();
-    const newCount = (readData.record.visits || 0) + 1;
+    const visits   = readData?.record?.visits ?? readData?.visits ?? 50;
+    const newCount = visits + 1;
 
     await fetch(BASE, {
       method:  'PUT',
