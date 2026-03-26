@@ -846,5 +846,26 @@ setLang('en');
   🌸 <span id="visit-count">...</span> visitors
 </div>
 
+<script>
+(function() {
+  const KEY = 'pbm_last_visit';
+  const EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
+  const last = parseInt(localStorage.getItem(KEY) || '0', 10);
+  const isNew = (Date.now() - last) > EXPIRY_MS;
+  const url = isNew ? '/api/counter' : '/api/counter?readonly=1';
+
+  fetch(url)
+    .then(r => r.json())
+    .then(d => {
+      const el = document.getElementById('visit-count');
+      if (el && d.visits) el.textContent = d.visits;
+      if (isNew) localStorage.setItem(KEY, Date.now().toString());
+    })
+    .catch(() => {
+      const el = document.getElementById('visit-count');
+      if (el) el.textContent = '50+';
+    });
+})();
+</script>
 </body>
 </html>
